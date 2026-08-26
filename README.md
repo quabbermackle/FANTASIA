@@ -1,5 +1,5 @@
 # FANTASY
-FANTASY is a geodesic integration code for arbitrary metrics with automatic differentiation. Please refer to Christian and Chan, 2021 for details.
+FANTASY is a geodesic integration code for arbitrary metrics with automatic differentiation. Please refer to Christian and Chan, 2021 for details. Is technically _semi_-symplectic instead of symplectic. 
 
 ### Inputing the Metric 
 
