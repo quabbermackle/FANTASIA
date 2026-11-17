@@ -67,7 +67,7 @@ Input coordinate transformations for the 0th, 1st, 2nd, 3rd coordinate in functi
 
 ################### Code Preamble ###################
 
-from pylab import *
+# from pylab import *
 from scipy import special
 import numpy
 from IPython.display import clear_output, display
@@ -148,6 +148,18 @@ def dif(func,x):
     else:
         ''' this is for when the function is a constant, e.g. gtt:=0 '''
         return 0
+
+def sin(arg):
+    if isinstance(arg, dual):
+        return arg.sin()
+    else:
+        return numpy.sin(arg)
+
+def cos(arg):
+    if isinstance(arg, dual):
+        return arg.cos()
+    else:
+        return numpy.cos(arg)
 
 ################### Metric Components ###################
 
