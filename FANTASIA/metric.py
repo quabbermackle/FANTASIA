@@ -6,105 +6,84 @@ g4 = [f'g{a}{b}' for a, b in zip([0,1,2,3], [0,1,2,3])]
 
 class metric4:
     
-    def __init__(self, glist: dict):
-        for key, val in glist.items():
-            if key in g4:
-                match key:
-                    case 'g00': self.g00 = val
-                    case 'g01': self.g01 = val
-                    case 'g02': self.g02 = val
-                    case 'g03': self.g03 = val
-
-                    case 'g10': self.g10 = val
-                    case 'g11': self.g11 = val
-                    case 'g12': self.g12 = val
-                    case 'g13': self.g13 = val
-
-                    case 'g20': self.g20 = val
-                    case 'g21': self.g21 = val
-                    case 'g22': self.g22 = val
-                    case 'g23': self.g23 = val
-
-                    case 'g30': self.g30 = val
-                    case 'g31': self.g31 = val
-                    case 'g32': self.g32 = val
-                    case 'g33': self.g33 = val
-
+    def __init__(self, Param: dict):
+        self.Param = Param
+        
     # diagonal
-    def g00(Param, Coord): return 0.
-    def g11(Param, Coord): return 0.
-    def g22(Param, Coord): return 0.
-    def g33(Param, Coord): return 0.
+    def g00(Coord): return 0.
+    def g11(Coord): return 0.
+    def g22(Coord): return 0.
+    def g33(Coord): return 0.
 
     # off-diagonal (assume symmetric)
-    def g01(Param, Coord): return 0.
-    def g02(Param, Coord): return 0.
-    def g03(Param, Coord): return 0.
+    def g01(Coord): return 0.
+    def g02(Coord): return 0.
+    def g03(Coord): return 0.
 
-    def g10(Param, Coord): return self.g01(Param, Coord)
-    def g12(Param, Coord): return 0.
-    def g13(Param, Coord): return 0.
+    def g10(Coord): return self.g01(Coord)
+    def g12(Coord): return 0.
+    def g13(Coord): return 0.
 
-    def g20(Param, Coord): return self.g02(Param, Coord)
-    def g21(Param, Coord): return self.g12(Param, Coord)
-    def g23(Param, Coord): return 0.
+    def g20(Coord): return self.g02(Coord)
+    def g21(Coord): return self.g12(Coord)
+    def g23(Coord): return 0.
 
-    def g30(Param, Coord): return self.g03(Param, Coord)
-    def g31(Param, Coord): return self.g13(Param, Coord)
-    def g32(Param, Coord): return self.g23(Param, Coord)
+    def g30(Coord): return self.g03(Coord)
+    def g31(Coord): return self.g13(Coord)
+    def g32(Coord): return self.g23(Coord)
     
 
 ################### Kerr Metric Components ###################
 
-# Diagonal components of the metric
-def g00(Param,Coord):
-    M = Param[0]
-    a = Param[1]
-    r = Coord[1]
-    theta = Coord[2]
-    Delta = r**2.-2.*M*r+a**2.
-    rhosq = r**2.+a**2.*cos(theta)**2.
-    return -(r**2.+a**2.+2.*M*r*a**2.*sin(theta)**2./rhosq)/Delta
-def g11(Param,Coord):
-    M = Param[0]
-    a = Param[1]
-    r = Coord[1]
-    theta = Coord[2]
-    return (a**2.-2.*M*r+r**2.)/(r**2.+a**2.*cos(theta)**2.)
-def g22(Param,Coord):
-    M = Param[0]
-    a = Param[1]
-    r = Coord[1]
-    theta = Coord[2]
-    return 1./(r**2.+a**2.*cos(theta)**2.)
-def g33(Param,Coord):
-    M = Param[0]
-    a = Param[1]
-    r = Coord[1]
-    theta = Coord[2]
-    Delta = r**2.-2.*M*r+a**2.
-    rhosq = r**2.+a**2.*cos(theta)**2.
-    return (1./(Delta*sin(theta)**2.))*(1.-2.*M*r/rhosq)
+class KerrBoyerLindquist(metric4):
 
-# Off-diagonal components of the metric
-def g01(Param,Coord):
-    return 0
-def g02(Param,Coord):
-    return 0
-def g03(Param,Coord):
-    M = Param[0]
-    a = Param[1]
-    r = Coord[1]
-    theta = Coord[2]
-    Delta = r**2.-2.*M*r+a**2.
-    rhosq = r**2.+a**2.*cos(theta)**2.
-    return -(2.*M*r*a)/(rhosq*Delta)
-def g12(Param,Coord):
-    return 0
-def g13(Param,Coord):
-    return 0
-def g23(Param,Coord):
-    return 0
+    def __init(self, Param: dict):
+        super.__init__(Param)
+
+        self.M = Param['M'] if 'M' in Param.keys() else 1.0
+        self.a = Param['a'] if 'a' in Param.keys() else 1.0
+        
+    def Delta(Coord):
+        r = Coord[1]
+        return r**2. - 2.*self.M*r + self.a**2.
+
+    def rhosq(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        return r**2. + (self.a**2. * cos(theta)**2.)
+
+    # Diagonal components of the metric
+    def g00(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        Delta = self.Delta(Coord)
+        rhosq = self.rhosq(Coord)
+        return -(r**2. + self.a**2. + 2.*self.M*r*self.a**2.*sin(theta)**2. / rhosq) / Delta
+    
+    def g11(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        return (self.a**2. - 2.*self.M*r + r**2.) / (r**2. + self.a**2.*cos(theta)**2.)
+    
+    def g22(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        return 1. / (r**2. + self.a**2.*cos(theta)**2.)
+    
+    def g33(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        Delta = self.Delta(Coord)
+        rhosq = self.rhosq(Coord)
+        return (1. / (Delta*sin(theta)**2.)) * (1. - 2.*self.M*r / rhosq)
+
+    # Off-diagonal components of the metric
+    def g03(Coord):
+        r = Coord[1]
+        theta = Coord[2]
+        Delta = self.Delta(Coord)
+        rhosq = self.rhosq(Coord)
+        return -(2.*self.M*r*self.a) / (rhosq*Delta)
 
 ################### Metric Derivatives ###################
 
