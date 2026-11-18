@@ -23,7 +23,7 @@ if False:
     order = 2
 
 if True:
-    # unstable spherical null geodesic
+    # timelike test particle
     # Kerr metric in Boyer-Lindquist coordinates
     # {t, r, theta, phi}
 
